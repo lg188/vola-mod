@@ -36,20 +36,24 @@ switch(path){
 		if(path.match(/^\/r\/.{1,}/)){
 			loc = "room";
 			roomID = path.match(/^\/r\/(.{1,})/)[1];
+			window.addEventListener('unload', saveData);
 		}
 
 }
 
 setInterval(tick, 1000);
 
-function saveData(state){
+function saveData(e,state){
+	if(typeof state === 'undefined'){
+		state = "closed";
+	}
 	//collect data;
 	var data = {"state" : state};
 
 	var strgID = "meta:" + roomID;
 	data.date = Date.now();
 	data.private =  window.config.private;
-	data.disabled =  window.config.private;
+	data.disabled =  window.config.disabled;
 	data.risk = 1;
 	save(strgID, data);
 }
@@ -57,10 +61,10 @@ function saveData(state){
 function tick(){
 	$("a").each(colourLinks);
 	if(loc == "room"){
-		saveData("open");
-		//window.unload(saveData("close"));
+		saveData(null, "open");
 	}
 }
+
 
 
 function colourLinks(){
@@ -72,7 +76,9 @@ function colourLinks(){
 		if(roomData !== null){
 			if(!roomData.disabled){
 				$(this).css({color: "cyan"});
-				if(roomData.date !== null){
+				if(roomData.state == "open"){
+					$(this).css({color: "#D880FC"});
+				}else if(roomData.date !== null && roomData.state == "closed"){
 					var now = Math.floor(Date.now() / 1000);
 					var diff = now - roomData.date;
 					var value = (diff / (config.threshold * 60 * 60 )) * 255;
@@ -92,7 +98,6 @@ function colourLinks(){
 				$(this).css({color: "grey"});
 			}
 
-		}else{
 		}
 
 	}
