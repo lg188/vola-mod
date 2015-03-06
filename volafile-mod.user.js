@@ -80,7 +80,7 @@ function colourLinks(){
 					$(this).css({color: "#D880FC"});
 				}else if(roomData.date !== null && roomData.state == "closed"){
 					var now = Math.floor(Date.now() / 1000);
-					var diff = now - roomData.date;
+					var diff = now - Math.floor(roomData.date/1000);
 					var value = (diff / (config.threshold * 60 * 60 )) * 255;
 					if(value > 255) {
 						value = 255;
