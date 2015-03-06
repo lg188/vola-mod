@@ -28,10 +28,10 @@ var roomID = "";
 switch(path){
 	case "/adiscover":
 		loc = "adiscover";
-		break;
+	break;
 	case "reports":
 		loc = "reports";
-		break;
+	break;
 	default:
 		if(path.match(/^\/r\/.{1,}/)){
 			loc = "room";
