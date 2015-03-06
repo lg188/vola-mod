@@ -24,6 +24,7 @@ function load(key) { return JSON.parse(localStorage.getItem(key));}
 var path = window.location.pathname;
 var loc = "undetected";
 var roomID = "";
+var counter = 0;
 
 switch(path){
 	case "/adiscover":
@@ -35,6 +36,7 @@ switch(path){
 	default:
 		if(path.match(/^\/r\/.{1,}/)){
 			loc = "room";
+			counter = -1;
 			roomID = path.match(/^\/r\/(.{1,})/)[1];
 			window.addEventListener('unload', saveData);
 		}
@@ -62,6 +64,12 @@ function tick(){
 	$("a").each(colourLinks);
 	if(loc == "room"){
 		saveData(null, "open");
+	}
+	if(counter > -1){
+		counter++;
+		if(counter >= config.interval){
+			window.location.reload(true);
+		}
 	}
 }
 
