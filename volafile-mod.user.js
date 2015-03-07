@@ -21,12 +21,22 @@ function save(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
  * Load a value from the local storage
  */
 function load(key) { return JSON.parse(localStorage.getItem(key));}
+function log(str, type){
+	if(typeof type === 'undefined'){ type = "info";}
+	$.notify(str, type);
+}
+
+if(load("config:data")){
+	config = load("config:data");
+}
 
 var path = window.location.pathname;
 var loc = "undetected";
 var roomID = "";
 var counter = 0;
-var help = "n next room (preceded by history) \n N next room in new tab\n p go back into history\n r reload\n q quit \n F1 help";
+var help = "n next room (preceded by history) \n N next room in new tab\n p go back into history\n r reload\n q quit \n : execute command \n F1 help";
+var help2= "set <variable> [<value>] ";
+
 switch(path){
 	case "/adiscover":
 		loc = "adiscover";
@@ -67,6 +77,7 @@ function saveData(e,state){
 }
 
 function tick(){
+	save("config:data", config);
 	$("a").each(colourLinks);
 	if(loc == "room"){
 		saveData(null, "open");
@@ -166,7 +177,8 @@ function keyHandler(e){
 				history.go(-1);
 				break;
 			case "F1":
-				$.notify(help, "info");
+				log(help);
+				log(help2);
 				break;
 			case "q":
 				window.close();
@@ -174,8 +186,15 @@ function keyHandler(e){
 			case "r":
 				window.location.reload(true);
 				break;
+			case ":":
+				var response = window.prompt("Insert Command", ":").match(/\S+/g);
+				if(response[0] === "set"){
+					config[response[1]] = response[2];
+					log("set '" + response[1]  + "' to '" + response[2] + "'");
+				}
+				break;
 			default:
-				$.notify(key + " is not bound", "info");
+				//$.notify(key + " is not bound", "info");
 		}
 	}
 }
