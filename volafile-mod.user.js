@@ -35,7 +35,7 @@ var loc = "undetected";
 var roomID = "";
 var counter = 0;
 var help = "n next room (preceded by history) \n N next room in new tab\n p go back into history\n r reload\n q quit \n : execute command \n F1 help";
-var help2= "set <variable> [<value>] ";
+var help2= "set <variable> [<value>] \n d[el] <variable>";
 
 switch(path){
 	case "/adiscover":
@@ -154,25 +154,22 @@ function keyHandler(e){
 		var next , nextURL;
 
 		switch(key){
-			case "n":
-				next = load("config:next");
-				if(window.history.next !== window.history.length){
-					window.history.go(1);
-				}else if(next){
-					nextURL = "/r/" + next;
-					save("config:next", null);
-					window.location = nextURL;
-				}else{
-					$.notif("There are no rooms left! Good work!","warn");
-				}
-				break;
 			case "N":
+			case "n":
+				window.history.go(1);
 				next = load("config:next");
-				if(next){
+				if(typeof next !== 'undefined' && next !== "null" && next !== ""){
+					console.log(next);
 					nextURL = "/r/" + next;
-					save("config:next", null);
-					window.open(nextURL);
+					save("config:next", "");
+					if(e.altKey || e.shiftKey){
+						window.open(nextURL);
+					}else{
+						window.location = nextURL;
+					}
 
+				}else{
+					log("There are no rooms left! Good work!");
 				}
 				break;
 			case "p":
@@ -190,9 +187,18 @@ function keyHandler(e){
 				break;
 			case ":":
 				var response = window.prompt("Insert Command", ":").match(/\S+/g);
-				if(response[0] === "set"){
-					config[response[1]] = response[2];
-					log("set '" + response[1]  + "' to '" + response[2] + "'");
+				switch(response[0]){
+					case "set":
+						config[response[1]] = response[2];
+						saveData();
+						log("set '" + response[1]  + "' to '" + response[2] + "'");
+						break;
+					case "delete":
+					case "del":
+					case "d":
+						config[response[1]] = undefined;
+						saveData();
+						log("deleted '" + response[1] + "'");
 				}
 				break;
 			default:
