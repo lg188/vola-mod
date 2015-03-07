@@ -41,6 +41,10 @@ switch(path){
 			roomID = path.match(/^\/r\/(.{1,})/)[1];
 			window.addEventListener('unload', saveData);
 			window.addEventListener('keypress',keyHandler);
+			var wrench = $("#room_settings > span");
+			if(wrench){
+				wrench.append("<span id='room_public'>P<span>");
+			}
 		}
 
 }
@@ -66,6 +70,16 @@ function tick(){
 	$("a").each(colourLinks);
 	if(loc == "room"){
 		saveData(null, "open");
+		if(window.config.disabled){
+			$("#room_name").css({color: "grey"});
+		}else{
+			$("#room_name").css({color: "#E0E0E0"});
+		}
+		if(!window.config.private){
+			$("#room_public").css({display: true});
+		}else{
+			$("#room_public").css({display: "none"});
+		}
 	}
 	if(counter > -1){
 		counter++;
