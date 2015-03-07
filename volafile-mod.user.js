@@ -3,9 +3,10 @@
 // @namespace   org.lg188.volafile-mod
 // @description Aids the current volafile moderators
 // @include     https://volafile.io/*
-// @version     0.1.0
+// @version     0.1.1
 // @grant       none
 // @require     https://code.jquery.com/jquery-2.1.3.js
+// @require	http://notifyjs.com/dist/notify-combined.js
 // ==/UserScript==
 
 // Default Settings
@@ -25,7 +26,7 @@ var path = window.location.pathname;
 var loc = "undetected";
 var roomID = "";
 var counter = 0;
-
+var help = "n next room (preceded by history) \n N next room in new tab\n p go back into history\n r reload\n q quit \n F1 help";
 switch(path){
 	case "/adiscover":
 		loc = "adiscover";
@@ -39,6 +40,7 @@ switch(path){
 			counter = -1;
 			roomID = path.match(/^\/r\/(.{1,})/)[1];
 			window.addEventListener('unload', saveData);
+			window.addEventListener('keypress',keyHandler);
 		}
 
 }
@@ -106,7 +108,60 @@ function colourLinks(){
 				$(this).css({color: "grey"});
 			}
 
+		}else{
+			if( !load(strgID) ){
+				strgID = "config:next";
+				save(strgID, id);
+			}
 		}
 
+	}
+}
+
+function keyHandler(e){
+	var key = e.key;
+	var target = e.target.toString();
+	var TextArea = target.search(/TextAreaElement/);
+	var input =  target.search(/InputElement/);
+	if(TextArea < 0 && input < 0 ){
+		var next , nextURL;
+
+		switch(key){
+			case "n":
+				next = load("config:next");
+				if(window.history.next !== window.history.length){
+					window.history.go(1);
+				}else if(next){
+					nextURL = "/r/" + next;
+					save("config:next", null);
+					window.location = nextURL;
+				}else{
+					$.notif("There are no rooms left! Good work!","warn");
+				}
+				break;
+			case "N":
+				next = load("config:next");
+				if(next){
+					nextURL = "/r/" + next;
+					save("config:next", null);
+					window.open(nextURL);
+
+				}
+				break;
+			case "p":
+				history.go(-1);
+				break;
+			case "F1":
+				$.notify(help, "info");
+				break;
+			case "q":
+				window.close();
+				break;
+			case "r":
+				window.location.reload(true);
+				break;
+			default:
+				$.notify(key + " is not bound", "info");
+		}
 	}
 }
