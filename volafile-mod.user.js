@@ -82,14 +82,16 @@ function tick(){
 	if(loc == "room"){
 		saveData(null, "open");
 		if(window.config.disabled){
+
 			$("#room_name").css({color: "grey"});
 		}else{
-			$("#room_name").css({color: "#E0E0E0"});
+			var colour = $("body").css("color");
+			$("#room_name").css({color: colour });
 		}
 		if(!window.config.private){
-			$("#room_public").css({display: true});
+			$("#room_public").css({visibility: "visible "});
 		}else{
-			$("#room_public").css({display: "none"});
+			$("#room_public").css({visibility: "hidden"});
 		}
 	}
 	if(counter > -1){
