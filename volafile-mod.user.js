@@ -10,8 +10,8 @@
 // ==/UserScript==
 
 // Default Settings
-var config =  { interval : 60, threshold : 72, debug : true};
-
+var defaultconf =  { interval : 60, threshold : 72, debug : true};
+var config = defaultconf;
 /*
  * Save a value int the local storage
  */
@@ -186,9 +186,10 @@ function keyHandler(e){
 				window.location.reload(true);
 				break;
 			case ":":
-				var response = window.prompt("Insert Command", ":").match(/\S+/g);
+				var response = window.prompt("Insert Command", "").match(/\S+/g);
 				switch(response[0]){
 					case "set":
+					case "s":
 						config[response[1]] = response[2];
 						saveData();
 						log("set '" + response[1]  + "' to '" + response[2] + "'");
@@ -199,6 +200,13 @@ function keyHandler(e){
 						config[response[1]] = undefined;
 						saveData();
 						log("deleted '" + response[1] + "'");
+						break;
+					case "reset":
+						if(confirm("Rest config?")){config = defaultconf;}
+						break;
+					case "get":
+					case "g":
+						console.log(config);
 				}
 				break;
 			default:
