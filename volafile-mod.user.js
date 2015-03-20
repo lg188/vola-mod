@@ -78,7 +78,7 @@ function saveData(e,state){
 
 function tick(){
 	save("config:data", config);
-	$("a").each(colourLinks);
+	$("a ").not("nVolaLink").each(colourLinks);
 	if(loc == "room"){
 		saveData(null, "open");
 		if(window.config.disabled){
@@ -142,6 +142,8 @@ function colourLinks(){
 			}
 		}
 
+	}else{
+		$(this).addClass("nVolaLink");
 	}
 }
 
