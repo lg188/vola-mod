@@ -34,8 +34,8 @@ var path = window.location.pathname;
 var loc = "undetected";
 var roomID = "";
 var counter = 0;
-var help = "n next room (preceded by history) \n N next room in new tab\n p go back into history\n r reload\n q quit \n : execute command \n F1 help";
-var help2= "set <variable> [<value>] \n d[el] <variable>";
+var help = "n next room (preceded by history) \n N next room in new tab\n p go back into history\n r reload\n q quit \n : execute command \n F1 help \n / search \n i insert";
+var help2= "s[et] <variable> [<value>] \n d[el] <variable>";
 
 switch(path){
 	case "/adiscover":
