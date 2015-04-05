@@ -105,9 +105,10 @@ function tick(){
 
 
 function colourLinks(){
-	var dest = $(this).context.pathname;
-	if(dest.match(/^\/r\/.{1,}/)){
-		var id = dest.match(/^\/r\/(.{1,})/)[1];
+	var dest = $(this).context;
+	console.log(dest.hostname);
+	if(dest.pathname.match(/^\/r\/.{1,}/) && dest.hostname == "volafile.io"){
+		var id = dest.pathname.match(/^\/r\/(.{1,})/)[1];
 		var strgID = "meta:" + id;
 		var roomData = load(strgID);
 		if(roomData !== null){
