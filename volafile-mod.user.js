@@ -213,6 +213,7 @@ function keyHandler(e){
 
 				document.getElementById("room_filters").style.display = "";
 				document.getElementById("room_search").style.display = "";
+				document.getElementById("show_search_ui").style.display = "none";
 				document.getElementById("search_input").focus();
 			default:
 				//$.notify(key + " is not bound", "info");
@@ -222,6 +223,7 @@ function keyHandler(e){
 		if(key == "Escape" || key == "Esc"){
 				document.getElementById("room_filters").style.display = "none";
 				document.getElementById("room_search").style.display = "none";
+				document.getElementById("show_search_ui").style.display = "";
 				document.activeElement.blur();
 		}
 	}
