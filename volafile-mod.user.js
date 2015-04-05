@@ -209,8 +209,20 @@ function keyHandler(e){
 						console.log(config);
 				}
 				break;
+			case "/":
+
+				document.getElementById("room_filters").style.display = "";
+				document.getElementById("room_search").style.display = "";
+				document.getElementById("search_input").focus();
 			default:
 				//$.notify(key + " is not bound", "info");
+		}
+	}else{
+		console.log(key);
+		if(key == "Escape" || key == "Esc"){
+				document.getElementById("room_filters").style.display = "none";
+				document.getElementById("room_search").style.display = "none";
+				document.activeElement.blur();
 		}
 	}
 }
