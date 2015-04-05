@@ -215,6 +215,9 @@ function keyHandler(e){
 				document.getElementById("room_search").style.display = "";
 				document.getElementById("show_search_ui").style.display = "none";
 				document.getElementById("search_input").focus();
+				break;
+			case "i":
+				document.getElementById("chat_input").focus();
 			default:
 				//$.notify(key + " is not bound", "info");
 		}
