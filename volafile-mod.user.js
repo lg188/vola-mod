@@ -222,7 +222,6 @@ function keyHandler(e){
 				//$.notify(key + " is not bound", "info");
 		}
 	}else{
-		console.log(key);
 		if(key == "Escape" || key == "Esc"){
 				document.getElementById("room_filters").style.display = "none";
 				document.getElementById("room_search").style.display = "none";
