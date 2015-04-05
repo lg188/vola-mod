@@ -106,7 +106,6 @@ function tick(){
 
 function colourLinks(){
 	var dest = $(this).context;
-	console.log(dest.hostname);
 	if(dest.pathname.match(/^\/r\/.{1,}/) && dest.hostname == "volafile.io"){
 		var id = dest.pathname.match(/^\/r\/(.{1,})/)[1];
 		var strgID = "meta:" + id;
@@ -155,16 +154,14 @@ function keyHandler(e){
 	var input =  target.search(/InputElement/);
 	if(TextArea < 0 && input < 0 ){
 		var next , nextURL;
-
 		switch(key){
 			case "N":
 			case "n":
 				window.history.go(1);
 				next = load("config:next");
-				if(typeof next !== 'undefined' && next !== "null" && next !== ""){
-					console.log(next);
+				if(next !== "null" && next !== "" && next !== roomID ){
 					nextURL = "/r/" + next;
-					save("config:next", "");
+					save("next","");
 					if(e.altKey || e.shiftKey){
 						window.open(nextURL);
 					}else{
