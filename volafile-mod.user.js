@@ -10,7 +10,8 @@
 // ==/UserScript==
 
 // Default Settings
-var defaultconf =  { interval : 60, threshold : 72, debug : true};
+var defaultconf =  { interval : 60, threshold : 72, debug : true, rate: 1};
+
 var config = defaultconf;
 /*
  * Save a value int the local storage
@@ -20,7 +21,7 @@ function save(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
 /*
  * Load a value from the local storage
  */
-function load(key) { return JSON.parse(localStorage.getItem(key));}
+function load(key) {return JSON.parse(localStorage[key]);}
 function log(str, type){
 	if(typeof type === 'undefined'){ type = "info";}
 	$.notify(str, type);
@@ -28,6 +29,18 @@ function log(str, type){
 
 if(load("config:data")){
 	config = load("config:data");
+	if(typeof config.interval === 'undefined' ){
+		config.interval = defaultconf.interval;
+	}
+	if(typeof config.threshold === 'undefined' ){
+		config.threshold = defaultconf.threshold;
+	}
+	if(typeof config.debug === 'undefined' ){
+		config.debug = defaultconf.debug;
+	}
+	if(typeof config.rate === 'undefined' ){
+		config.rate = defaultconf.rate;
+	}
 }
 
 var path = window.location.pathname;
@@ -46,20 +59,20 @@ switch(path){
 	break;
 	default:
 		if(path.match(/^\/r\/.{1,}/)){
-			loc = "room";
-			counter = -1;
-			roomID = path.match(/^\/r\/(.{1,})/)[1];
-			window.addEventListener('unload', saveData);
-			window.addEventListener('keypress',keyHandler);
-			var wrench = $("#room_settings > span");
-			if(wrench){
-				wrench.append("<span id='room_public'>P<span>");
-			}
+		loc = "room";
+		counter = -1;
+		roomID = path.match(/^\/r\/(.{1,})/)[1];
+		window.addEventListener('unload', saveData);
+		window.addEventListener('keypress',keyHandler);
+		var wrench = $("#room_settings > span");
+		if(wrench){
+			wrench.append("<span id='room_public'>P<span>");
 		}
+	}
 
 }
 
-setInterval(tick, 1000);
+setInterval(tick, config.rate * 1000);
 
 function saveData(e,state){
 	if(typeof state === 'undefined'){
@@ -110,8 +123,8 @@ function colourLinks(){
 		var id = dest.pathname.match(/^\/r\/(.{1,})/)[1];
 		var strgID = "meta:" + id;
 		var roomData = load(strgID);
-		if(roomData !== null){
-			if(!roomData.disabled){
+		if(typeof roomData !== 'undefined'){
+			if(roomData.disabled !== true ){
 				$(this).css({color: "cyan"});
 				if(roomData.state == "open"){
 					$(this).css({color: "#D880FC"});
@@ -121,6 +134,11 @@ function colourLinks(){
 					var value = (diff / (config.threshold * 60 * 60 )) * 255;
 					if(value > 255) {
 						value = 255;
+						var strTarget = load("config:next");
+						if(strTarget === "" || load("meta:"+strTarget) !== undefined ){
+							save("config:next", id);
+						}else{
+						}
 					} else {
 						value = Math.ceil(value);
 					}
@@ -137,8 +155,7 @@ function colourLinks(){
 
 		}else{
 			if( !load(strgID) ){
-				strgID = "config:next";
-				save(strgID, id);
+				save("config:next", id);
 			}
 		}
 
@@ -156,77 +173,78 @@ function keyHandler(e){
 		var next , nextURL;
 		switch(key){
 			case "N":
-			case "n":
+				case "n":
 				window.history.go(1);
-				next = load("config:next");
-				if(next !== "null" && next !== "" && next !== roomID ){
-					nextURL = "/r/" + next;
-					save("next","");
-					if(e.altKey || e.shiftKey){
-						window.open(nextURL);
-					}else{
-						window.location = nextURL;
-					}
-
+			next = load("config:next");
+			if(next !== "null" && next !== "" && next !== roomID ){
+				nextURL = "/r/" + next;
+				save("config:next","");
+				if(e.altKey || e.shiftKey){
+					window.open(nextURL);
 				}else{
-					log("There are no rooms left! Good work!");
+					window.location = nextURL;
 				}
-				break;
+
+			}else{
+				log("There are no rooms left! Good work!");
+			}
+			break;
 			case "p":
 				history.go(-1);
-				break;
+			break;
 			case "F1":
 				log(help);
-				log(help2);
-				break;
+			log(help2);
+			break;
 			case "q":
 				window.close();
-				break;
+			break;
 			case "r":
 				window.location.reload(true);
-				break;
+			break;
 			case ":":
 				var response = window.prompt("Insert Command", "").match(/\S+/g);
-				switch(response[0]){
-					case "set":
+			switch(response[0]){
+				case "set":
 					case "s":
-						config[response[1]] = response[2];
-						saveData();
-						log("set '" + response[1]  + "' to '" + response[2] + "'");
-						break;
-					case "delete":
+					config[response[1]] = response[2];
+				saveData();
+				log("set '" + response[1]  + "' to '" + response[2] + "'");
+				break;
+				case "delete":
 					case "del":
 					case "d":
-						config[response[1]] = undefined;
-						saveData();
-						log("deleted '" + response[1] + "'");
-						break;
-					case "reset":
-						if(confirm("Rest config?")){config = defaultconf;}
-						break;
-					case "get":
-					case "g":
-						console.log(config);
-				}
+					config[response[1]] = undefined;
+				saveData();
+				log("deleted '" + response[1] + "'");
 				break;
+				case "reset":
+					if(confirm("Rest config?")){config = defaultconf;}
+				break;
+				case "get":
+					case "g":
+					console.log(config);
+			}
+			break;
 			case "/":
 
 				document.getElementById("room_filters").style.display = "";
-				document.getElementById("room_search").style.display = "";
-				document.getElementById("show_search_ui").style.display = "none";
-				document.getElementById("search_input").focus();
-				break;
+			document.getElementById("room_search").style.display = "";
+			document.getElementById("show_search_ui").style.display = "none";
+			document.getElementById("search_input").focus();
+			break;
 			case "i":
 				document.getElementById("chat_input").focus();
+			break;
 			default:
 				//$.notify(key + " is not bound", "info");
 		}
 	}else{
 		if(key == "Escape" || key == "Esc"){
-				document.getElementById("room_filters").style.display = "none";
-				document.getElementById("room_search").style.display = "none";
-				document.getElementById("show_search_ui").style.display = "";
-				document.activeElement.blur();
+			document.getElementById("room_filters").style.display = "none";
+			document.getElementById("room_search").style.display = "none";
+			document.getElementById("show_search_ui").style.display = "";
+			document.activeElement.blur();
 		}
 	}
 }
