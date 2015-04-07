@@ -152,11 +152,9 @@ function colourLinks(){
 						var g = 255-value;
 						var b = 50;
 						var rgb = "rgb(" + r + "," + g + "," + b + ")";
-						console.log(rgb);
 						$(this).css({color:rgb});
 
 					}else{
-						console.log("dork");
 						$(this).css({color:"pink"});
 					}
 				}
