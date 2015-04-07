@@ -21,7 +21,7 @@ function save(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
 /*
  * Load a value from the local storage
  */
-function load(key) {return JSON.parse(localStorage[key]);}
+function load(key) {return JSON.parse(localStorage.getItem(key));}
 function log(str, type){
 	if(typeof type === 'undefined'){ type = "info";}
 	$.notify(str, type);
@@ -85,7 +85,6 @@ function saveData(e,state){
 	data.date = Date.now();
 	data.private =  window.config.private;
 	data.disabled =  window.config.disabled;
-	data.risk = 1;
 	save(strgID, data);
 }
 
@@ -123,31 +122,43 @@ function colourLinks(){
 		var id = dest.pathname.match(/^\/r\/(.{1,})/)[1];
 		var strgID = "meta:" + id;
 		var roomData = load(strgID);
-		if(typeof roomData !== 'undefined'){
+		if( roomData !== null){
 			if(roomData.disabled !== true ){
 				$(this).css({color: "cyan"});
 				if(roomData.state == "open"){
 					$(this).css({color: "#D880FC"});
-				}else if(roomData.date !== null && roomData.state == "closed"){
-					var now = Math.floor(Date.now() / 1000);
-					var diff = now - Math.floor(roomData.date/1000);
-					var value = (diff / (config.threshold * 60 * 60 )) * 255;
-					if(value > 255) {
-						value = 255;
-						var strTarget = load("config:next");
-						if(strTarget === "" || load("meta:"+strTarget) !== undefined ){
-							save("config:next", id);
-						}else{
-						}
-					} else {
-						value = Math.ceil(value);
-					}
-					var r = value;
-					var g = 255-value;
-					var b = 50;
-					var rgb = "rgb(" + r + "," + g + "," + b + ")";
-					$(this).css({color:rgb});
+				}else{
+					if(roomData.date !== null && roomData.state == "closed"){
+						var now = Math.floor(Date.now() / 1000);
+						var diff = now - Math.floor(roomData.date/1000);
+						var value = (diff / (config.threshold * 60 * 60 )) * 255;
+						var value = (diff / (config.threshold * 3600));
+						if(value > 255) {
+							value = 255;
+							try{
+								var strTarget = load("config:next");
 
+								if(strTarget === "" || load("meta:"+strTarget) !== undefined ){
+									save("config:next", id);
+								}else{
+								}
+							}catch(e){
+								console.log(e);
+							}
+						} else {
+							value = Math.ceil(value);
+						}
+						var r = value;
+						var g = 255-value;
+						var b = 50;
+						var rgb = "rgb(" + r + "," + g + "," + b + ")";
+						console.log(rgb);
+						$(this).css({color:rgb});
+
+					}else{
+						console.log("dork");
+						$(this).css({color:"pink"});
+					}
 				}
 			}else{
 				$(this).css({color: "grey"});
