@@ -10,7 +10,7 @@
 // ==/UserScript==
 
 // Default Settings
-var defaultconf =  { interval : 60, threshold : 72, debug : true, rate: 1};
+var defaultconf =  { interval : 60, threshold : 72, debug : true, rate: 1, regex: false};
 
 var config = defaultconf;
 
@@ -31,17 +31,20 @@ function log(str, type){
 
 if(load("config:data")){
 	config = load("config:data");
-	if(typeof config.interval === 'undefined' ){
+	if(typeof config.interval === 'undefined' || isNaN(config.rate) ){
 		config.interval = defaultconf.interval;
 	}
-	if(typeof config.threshold === 'undefined' ){
+	if(typeof config.threshold === 'undefined' || isNaN(config.interval) ){
 		config.threshold = defaultconf.threshold;
 	}
 	if(typeof config.debug === 'undefined' ){
 		config.debug = defaultconf.debug;
 	}
-	if(typeof config.rate === 'undefined' ){
+	if(typeof config.rate === 'undefined' || isNaN(config.rate) ){
 		config.rate = defaultconf.rate;
+	}
+	if(typeof config.regex === 'undefined' ){
+		config.regex = defaultconf.regex;
 	}
 }
 
@@ -197,7 +200,6 @@ function keyHandler(e){
 					}else{
 						window.location = nextURL;
 					}
-
 				}else{
 					log("There are no rooms left! Good work!");
 				}
@@ -220,6 +222,24 @@ function keyHandler(e){
 				switch(response[0]){
 					case "set":
 					case "s":
+						switch(typeof config[response[1]]){
+						case 'number':
+							response[2] = +response[2];
+							break;
+						case 'boolean':
+							if(response[2].match(/^true$/i)){
+								response[2] = true;
+							}else{
+								if(response[2].match(/^false$/i)){
+									response[2] = false;
+								}else{
+									response[2] = null;
+								}
+							}
+							break;
+						default:
+							log("unknown type, using string");
+						}
 						config[response[1]] = response[2];
 						saveData();
 						log("set '" + response[1]  + "' to '" + response[2] + "'");
@@ -263,21 +283,22 @@ function keyHandler(e){
 }
 
 function reg(obj){
-	try{
-		for(var i = 0; i < regex.length; i++){
-			var re = regex[i];
-			var data = re.split("/");
-			//console.log(data);
-			if(data[2].match(/\b[fu]\b/)){
-				var color = /color:\((\x{3}|\x{6})\)/;
-				color = data[2].match(color);
-				if(obj.innerHTML.match(data[1])){
-					$(obj).css({"color":"pink"});
+	if(config.regex){
+		try{
+			for(var i = 0; i < regex.length; i++){
+				var re = regex[i];
+				var data = re.split("/");
+				//console.log(data);
+				if(data[2].match(/\b[fu]\b/)){
+					var color = /color:\((\x{3}|\x{6})\)/;
+					color = data[2].match(color);
+					if(obj.innerHTML.match(data[1])){
+						$(obj).css({"color":"pink"});
+					}
 				}
 			}
+		}catch(e){
+			console.log(e);
 		}
-	}catch(e){
-		console.log(e);
 	}
-
 }
