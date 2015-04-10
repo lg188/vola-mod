@@ -13,6 +13,8 @@
 var defaultconf =  { interval : 60, threshold : 72, debug : true, rate: 1};
 
 var config = defaultconf;
+
+var regex = ["/(.png|.jpg)$/f;"];
 /*
  * Save a value int the local storage
  */
@@ -131,7 +133,6 @@ function colourLinks(){
 					if(roomData.date !== null && roomData.state == "closed"){
 						var now = Math.floor(Date.now() / 1000);
 						var diff = now - Math.floor(roomData.date/1000);
-						var value = (diff / (config.threshold * 60 * 60 )) * 255;
 						var value = (diff / (config.threshold * 3600));
 						if(value > 255) {
 							value = 255;
@@ -140,7 +141,6 @@ function colourLinks(){
 
 								if(strTarget === "" || load("meta:"+strTarget) !== undefined ){
 									save("config:next", id);
-								}else{
 								}
 							}catch(e){
 								console.log(e);
@@ -169,7 +169,11 @@ function colourLinks(){
 		}
 
 	}else{
-		$(this).addClass("nVolaLink");
+		if(dest.hostname == "volafile.io" && dest.pathname.match(/^\/get\/.{1,}/)){
+			reg(this);
+		}else{
+			$(this).addClass("nVolaLink");
+		}
 	}
 }
 
@@ -182,69 +186,69 @@ function keyHandler(e){
 		var next , nextURL;
 		switch(key){
 			case "N":
-				case "n":
+			case "n":
 				window.history.go(1);
-			next = load("config:next");
-			if(next !== "null" && next !== "" && next !== roomID ){
-				nextURL = "/r/" + next;
-				save("config:next","");
-				if(e.altKey || e.shiftKey){
-					window.open(nextURL);
-				}else{
-					window.location = nextURL;
-				}
+				next = load("config:next");
+				if(next !== "null" && next !== "" && next !== roomID ){
+					nextURL = "/r/" + next;
+					save("config:next","");
+					if(e.altKey || e.shiftKey){
+						window.open(nextURL);
+					}else{
+						window.location = nextURL;
+					}
 
-			}else{
-				log("There are no rooms left! Good work!");
-			}
-			break;
+				}else{
+					log("There are no rooms left! Good work!");
+				}
+				break;
 			case "p":
 				history.go(-1);
-			break;
+				break;
 			case "F1":
 				log(help);
-			log(help2);
-			break;
+				log(help2);
+				break;
 			case "q":
 				window.close();
-			break;
+				break;
 			case "r":
 				window.location.reload(true);
-			break;
+				break;
 			case ":":
 				var response = window.prompt("Insert Command", "").match(/\S+/g);
-			switch(response[0]){
-				case "set":
+				switch(response[0]){
+					case "set":
 					case "s":
-					config[response[1]] = response[2];
-				saveData();
-				log("set '" + response[1]  + "' to '" + response[2] + "'");
-				break;
-				case "delete":
+						config[response[1]] = response[2];
+						saveData();
+						log("set '" + response[1]  + "' to '" + response[2] + "'");
+						break;
+					case "delete":
 					case "del":
 					case "d":
-					config[response[1]] = undefined;
-				saveData();
-				log("deleted '" + response[1] + "'");
+						config[response[1]] = undefined;
+						saveData();
+						log("deleted '" + response[1] + "'");
+						break;
+					case "reset":
+						if(confirm("Rest config?")){config = defaultconf;}
+						break;
+					case "get":
+						case "g":
+						console.log(config);
+				}
 				break;
-				case "reset":
-					if(confirm("Rest config?")){config = defaultconf;}
-				break;
-				case "get":
-					case "g":
-					console.log(config);
-			}
-			break;
 			case "/":
 
 				document.getElementById("room_filters").style.display = "";
-			document.getElementById("room_search").style.display = "";
-			document.getElementById("show_search_ui").style.display = "none";
-			document.getElementById("search_input").focus();
-			break;
+				document.getElementById("room_search").style.display = "";
+				document.getElementById("show_search_ui").style.display = "none";
+				document.getElementById("search_input").focus();
+				break;
 			case "i":
 				document.getElementById("chat_input").focus();
-			break;
+				break;
 			default:
 				//$.notify(key + " is not bound", "info");
 		}
@@ -256,4 +260,24 @@ function keyHandler(e){
 			document.activeElement.blur();
 		}
 	}
+}
+
+function reg(obj){
+	try{
+		for(var i = 0; i < regex.length; i++){
+			var re = regex[i];
+			var data = re.split("/");
+			//console.log(data);
+			if(data[2].match(/\b[fu]\b/)){
+				var color = /color:\((\x{3}|\x{6})\)/;
+				color = data[2].match(color);
+				if(obj.innerHTML.match(data[1])){
+					$(obj).css({"color":"pink"});
+				}
+			}
+		}
+	}catch(e){
+		console.log(e);
+	}
+
 }
