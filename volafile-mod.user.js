@@ -136,7 +136,7 @@ function colourLinks(){
 					if(roomData.date !== null && roomData.state == "closed"){
 						var now = Math.floor(Date.now() / 1000);
 						var diff = now - Math.floor(roomData.date/1000);
-						var value = (diff / (config.threshold * 3600));
+						var value = (diff / (config.threshold * 3600))*255;
 						if(value > 255) {
 							value = 255;
 							try{
