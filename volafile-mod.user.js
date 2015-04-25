@@ -114,7 +114,7 @@ function tick(){
 	if(counter > -1){
 		counter++;
 		if(counter >= config.interval){
-			window.location.reload(true);
+			location.reload();
 		}
 	}
 }
