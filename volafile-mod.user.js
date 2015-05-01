@@ -58,26 +58,27 @@ var help2= "s[et] <variable> [<value>] \n d[el] <variable>";
 switch(path){
 	case "/adiscover":
 		loc = "adiscover";
-	break;
+		setInterval(tick, config.rate * 1000);
+		break;
 	case "reports":
 		loc = "reports";
-	break;
+		setInterval(tick, config.rate * 1000);
+		break;
 	default:
 		if(path.match(/^\/r\/.{1,}/)){
-		loc = "room";
-		counter = -1;
-		roomID = path.match(/^\/r\/(.{1,})/)[1];
-		window.addEventListener('unload', saveData);
-		window.addEventListener('keypress',keyHandler);
-		var wrench = $("#room_settings > span");
-		if(wrench){
-			wrench.append("<span id='room_public'>P<span>");
+			loc = "room";
+			counter = -1;
+			roomID = path.match(/^\/r\/(.{1,})/)[1];
+			window.addEventListener('unload', saveData);
+			window.addEventListener('keypress',keyHandler);
+			var wrench = $("#room_settings > span");
+			if(wrench){
+				wrench.append("<span id='room_public'>P<span>");
+			}
+			setInterval(tick, config.rate * 1000);
 		}
-	}
-
 }
 
-setInterval(tick, config.rate * 1000);
 
 function saveData(e,state){
 	if(typeof state === 'undefined'){
