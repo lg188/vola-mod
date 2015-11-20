@@ -15,8 +15,17 @@ vm_dcfg.boundary = 72;
 vm_dcfg.debug = false;
 vm_dcfg.rate = 1;
 
+if(localStorage.vm_cfg === null){ localStorage.vm_cfg = {}; console.log("fixed empty config");}
+
 // Configuration
-function cfgClear(key){localStorage.vm_cfg[key] = "";}
+function cfgClear(key){localStorage.vm_cfg[key] = null;}
+function cfgExists(key){
+	if(typeof localStorage.vm_cfg !== "undefined" && typeof localStorage.vm_cfg[key] !== "undefined"){ 
+		return true;
+	} else {
+		return false;
+	}
+}
 function cfgSave(key,value){
 	if(value === vm_dcfg[key]){
 		cfgClear(key);
@@ -26,7 +35,7 @@ function cfgSave(key,value){
 }
 
 function cfgLoad(key){
-	if( localStorage.vm_cfg[key] !== null ){
+	if( cfgExists(key)){
 		if(localStorage.vm_cfg[key] == vm_dcfg[key]){ cfgClear(key);}
 		return localStorage.vm_cfg[key];
 	}else if( vm_dcfg[key] !== null){
@@ -52,10 +61,8 @@ function tick(){
 
 	}
 }
-
 console.log("tick function defined");
-var derp = cfgLoad("rate");
-console.log(derp);
+
 setInterval( tick, cfgLoad("rate") * 10000);
 
 console.log("EOF");
