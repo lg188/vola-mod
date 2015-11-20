@@ -16,10 +16,10 @@ vm_dcfg.debug = false;
 vm_dcfg.rate = 1;
 
 // Configuration
-function cfgSave(key,value){ localstorage['vm_cfg'][key] = value;}
-function cfgLoad(key){ return localstorage['vm_cfg'][key];}
-function cfgClear(key){localstorage['vm_cfg'][key] = "";}
+function cfgSave(key,value){ localStorage.vm_cfg[key] = value;}
+function cfgLoad(key){ return localStorage.vm_cfg[key];}
+function cfgClear(key){localStorage.vm_cfg[key] = "";}
 
-vm_dcfg.forEach( (function(){
-	consloe.log(this);
-})
+vm_dcfg.map(function(key){
+	console.log(key);
+});
