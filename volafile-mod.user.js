@@ -1,4 +1,3 @@
-
 // ==UserScript==
 // @name        volafile-mod
 // @namespace   org.lg188.volafile-mod
@@ -6,8 +5,6 @@
 // @include     https://volafile.io/*
 // @version     0.3.0
 // @grant       none
-// @require     https://code.jquery.com/jquery-2.1.3.js
-// @require	http://notifyjs.com/dist/notify-combined.js
 // ==/UserScript==
 
 // Default Configuration
