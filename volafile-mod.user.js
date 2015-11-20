@@ -45,24 +45,50 @@ function cfgLoad(key){
 	}
 }
 
-console.log("Configuration loaded");
 
+// Runtime information
 var path = window.location.pathname;
+var reload = false;
+var timer = 0;
 
-console.log("defining tick function");
-
-function tick(){
-	switch(path){
-		case "/adiscover":
-			console.log("derp page");
+// Determine the environment based on location
+switch(path){
+	case "/adiscover":
+	case "/reports":
+		reload = true;
 		break;
-		default:
-			console.log("default page");
+	default:
+		console.log("default page");
+}
 
+// Define the tick
+function tick(){
+	if(timer >= cfgLoad("interval")){
+		timer = 0;
+		console.log("reload page");
+	}else{
+		timer++;
+	}
+	colourLinks();
+	//console.log("tick " + timer);
+}
+
+
+
+function colourLinks(){
+	var elements = getElements("a");
+	for( var element in elements){
 	}
 }
-console.log("tick function defined");
 
-setInterval( tick, cfgLoad("rate") * 10000);
+// Execute tick once per second
 
-console.log("EOF");
+setInterval( tick, cfgLoad("rate") * 1000);
+
+// Utility functions;
+function getElements(T){
+	return document.getElementsByTagName(T);
+}
+
+console.log("End of File");
+
