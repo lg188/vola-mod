@@ -7,5 +7,6 @@
 	"browser" : true, 
 	"jquery" : true,
 	"multistr" : true, 
+	"esversion" : 6,
 	"predef": ["stacktrace"]
 }
