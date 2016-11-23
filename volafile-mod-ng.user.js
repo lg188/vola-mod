@@ -57,7 +57,7 @@ try {
 
 	  if (this.config) {
 		    var id = this.config.room_id;
-		    // TODO: set key listener 
+		    // TODO: set key listener
 		    doRoom(id);
 		    window.setInterval(doRoom(), 10000);
 	  } else {
